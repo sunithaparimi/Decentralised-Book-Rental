@@ -214,6 +214,7 @@ function App() {
                 <button onClick={listBook} className="btn primary-btn">List Book</button>
               </div>
             </div>
+    )}
   
          <div className="glass-card">
   <div className="card-header"><h2>All Books</h2></div>
