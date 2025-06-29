@@ -216,7 +216,7 @@ function App() {
                 <button onClick={listBook} className="btn primary-btn">List Book</button>
               </div>
             </div>
-          </div> {/* ✅ Fix: Closed the dashboard-grid */}
+          
 
           {/* 📚 All Books Section */}
           <div className="glass-card">
@@ -239,6 +239,7 @@ function App() {
               ))}
             </div>
           </div>
+</div> 
 
           {/* 📚 Available & Rented Sections */}
           <div className="dashboard-grid">
