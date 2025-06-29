@@ -220,7 +220,7 @@ function App() {
 
           {/* 📚 All Books Section */}
           <div className="glass-card">
-            <div className="card-header"><h2>All Books</h2></div>
+            <div className="card-header"><h2>Your Books</h2></div>
             <div className="book-list books-scroll-container">
               {books.map(book => (
                 <div key={book.index} className="book-card">
