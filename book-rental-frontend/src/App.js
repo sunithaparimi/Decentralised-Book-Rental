@@ -184,26 +184,28 @@ function App() {
     if (contract && account) checkRefund();
   }, [contract, account]);
 
-  return (
-    <div className="app-container">
-      <header className="app-header">
-        <h1 className="app-title">
-          <span className="gradient-text">Decentralized Book Rental</span>
-        </h1>
-        <div className="wallet-info">
-          {!account ? (
-            <button onClick={connectWallet} className="btn primary-btn">Connect Wallet</button>
-          ) : (
-            <>
-              <span className="wallet-label">Connected:</span>
-              <span className="wallet-address">{account}</span>
-            </>
-          )}
-        </div>
-      </header>
+ return (
+  <div className="app-container">
+    <header className="app-header">
+      <h1 className="app-title">
+        <span className="gradient-text">Decentralized Book Rental</span>
+      </h1>
+      <div className="wallet-info">
+        {!account ? (
+          <button onClick={connectWallet} className="btn primary-btn">Connect Wallet</button>
+        ) : (
+          <>
+            <span className="wallet-label">Connected:</span>
+            <span className="wallet-address">{account}</span>
+          </>
+        )}
+      </div>
+    </header>
 
-      <main className="app-main">
-        {account && (
+    <main className="app-main">
+      {account && (
+        <>
+          {/* 📚 Book Listing Section */}
           <div className="dashboard-grid">
             <div className="glass-card">
               <div className="card-header"><h2>List a New Book</h2></div>
@@ -214,99 +216,98 @@ function App() {
                 <button onClick={listBook} className="btn primary-btn">List Book</button>
               </div>
             </div>
-    
-  
-         <div className="glass-card">
-  <div className="card-header"><h2>All Books</h2></div>
-  <div className="book-list books-scroll-container">
-    {books.map(book => (
-      <div key={book.index} className="book-card">
-        <p><strong>{book.title}</strong></p>
-        <p>
-          Rent: {book.dailyPrice ? web3?.utils.fromWei(book.dailyPrice.toString(), 'ether') : 'N/A'} ETH/day +{" "}
-          {book.deposit ? web3?.utils.fromWei(book.deposit.toString(), 'ether') : 'N/A'} ETH deposit
-        </p>
-        <p>Status: {book.isAvailable ? "Available" : "Rented"}</p>
+          </div> {/* ✅ Fix: Closed the dashboard-grid */}
 
-        {book.isAvailable && book.owner.toLowerCase() === account?.toLowerCase() ? (
-          <button onClick={() => unlistBook(book.index)} className="btn danger-btn">Unlist</button>
-        ) : !book.isAvailable ? (
-          <p className="disabled-text">Cannot unlist</p>
-        ) : null}
-      </div>
-    ))}
-  </div>
-</div>
-
-
-    <div className="dashboard-grid">
-  {/* Available Books */}
-  <div className="glass-card">
-    <div className="card-header"><h2>Available Books</h2></div>
-    <div className="books-scroll-container">
-      {books.filter(book => book.isAvailable && book.owner.toLowerCase() !== account?.toLowerCase()).length > 0 ? (
-        books
-          .filter(book => book.isAvailable && book.owner.toLowerCase() !== account?.toLowerCase())
-          .map(book => (
-            <div key={book.index} className="book-card">
-              <p><strong>{book.title}</strong></p>
-              <p>
-                Rent: {book.dailyPrice ? web3?.utils.fromWei(book.dailyPrice.toString(), 'ether') : 'N/A'} ETH/day +{" "}
-                {book.deposit ? web3?.utils.fromWei(book.deposit.toString(), 'ether') : 'N/A'} ETH deposit
-              </p>
-              <button onClick={() => rentBook(book.index)} className="btn primary-btn small-button">Rent</button>
+          {/* 📚 All Books Section */}
+          <div className="glass-card">
+            <div className="card-header"><h2>All Books</h2></div>
+            <div className="book-list books-scroll-container">
+              {books.map(book => (
+                <div key={book.index} className="book-card">
+                  <p><strong>{book.title}</strong></p>
+                  <p>
+                    Rent: {book.dailyPrice ? web3?.utils.fromWei(book.dailyPrice.toString(), 'ether') : 'N/A'} ETH/day +{" "}
+                    {book.deposit ? web3?.utils.fromWei(book.deposit.toString(), 'ether') : 'N/A'} ETH deposit
+                  </p>
+                  <p>Status: {book.isAvailable ? "Available" : "Rented"}</p>
+                  {book.isAvailable && book.owner.toLowerCase() === account?.toLowerCase() ? (
+                    <button onClick={() => unlistBook(book.index)} className="btn danger-btn">Unlist</button>
+                  ) : !book.isAvailable ? (
+                    <p className="disabled-text">Cannot unlist</p>
+                  ) : null}
+                </div>
+              ))}
             </div>
-          ))
-      ) : (
-        <p>No available books to rent.</p>
-      )}
-    </div>
-  </div>
+          </div>
 
-  {/* Rented by You */}
-  <div className="glass-card">
-    <div className="card-header"><h2>Rented by You</h2></div>
-    <div className="books-scroll-container">
-      {books.filter(book =>
-        !book.isAvailable &&
-        book.rental.renter.toLowerCase() === account?.toLowerCase()
-      ).length > 0 ? (
-        books
-          .filter(book =>
-            !book.isAvailable &&
-            book.rental.renter.toLowerCase() === account?.toLowerCase()
-          )
-          .map(book => (
-            <div key={book.index} className="book-card">
-              <p><strong>{book.title}</strong></p>
-              <p>Rented At: {new Date(Number(book.rental.rentedAt) * 1000).toLocaleTimeString()}</p>
-              <p>Elapsed: {Math.floor((Date.now() - Number(book.rental.rentedAt) * 1000) / 60000)} min</p>
-              <button onClick={() => returnBook(book.index)} className="btn primary-btn">Return</button>
-            </div>
-          ))
-      ) : (
-        <p>You haven't rented any books.</p>
-      )}
-    </div>
-  </div>
-</div>
-
-
-            {parseFloat(refundAmount) > 0 && (
-              <div className="centered-refund-banner">
-                <p>Pending Refund: {refundAmount} ETH</p>
-                <button onClick={withdrawRefund} className="btn primary-btn">Withdraw Refund</button>
+          {/* 📚 Available & Rented Sections */}
+          <div className="dashboard-grid">
+            {/* Available Books */}
+            <div className="glass-card">
+              <div className="card-header"><h2>Available Books</h2></div>
+              <div className="books-scroll-container">
+                {books.filter(book => book.isAvailable && book.owner.toLowerCase() !== account?.toLowerCase()).length > 0 ? (
+                  books
+                    .filter(book => book.isAvailable && book.owner.toLowerCase() !== account?.toLowerCase())
+                    .map(book => (
+                      <div key={book.index} className="book-card">
+                        <p><strong>{book.title}</strong></p>
+                        <p>
+                          Rent: {book.dailyPrice ? web3?.utils.fromWei(book.dailyPrice.toString(), 'ether') : 'N/A'} ETH/day +{" "}
+                          {book.deposit ? web3?.utils.fromWei(book.deposit.toString(), 'ether') : 'N/A'} ETH deposit
+                        </p>
+                        <button onClick={() => rentBook(book.index)} className="btn primary-btn small-button">Rent</button>
+                      </div>
+                    ))
+                ) : (
+                  <p>No available books to rent.</p>
+                )}
               </div>
-            )}
-          </>
-        )}
-      </main>
+            </div>
 
-      <footer className="app-footer">
-        <p>© {new Date().getFullYear()} BookRental DApp</p>
-      </footer>
-    </div>
-  );
-}
+            {/* Rented Books */}
+            <div className="glass-card">
+              <div className="card-header"><h2>Rented by You</h2></div>
+              <div className="books-scroll-container">
+                {books.filter(book =>
+                  !book.isAvailable &&
+                  book.rental.renter.toLowerCase() === account?.toLowerCase()
+                ).length > 0 ? (
+                  books
+                    .filter(book =>
+                      !book.isAvailable &&
+                      book.rental.renter.toLowerCase() === account?.toLowerCase()
+                    )
+                    .map(book => (
+                      <div key={book.index} className="book-card">
+                        <p><strong>{book.title}</strong></p>
+                        <p>Rented At: {new Date(Number(book.rental.rentedAt) * 1000).toLocaleTimeString()}</p>
+                        <p>Elapsed: {Math.floor((Date.now() - Number(book.rental.rentedAt) * 1000) / 60000)} min</p>
+                        <button onClick={() => returnBook(book.index)} className="btn primary-btn">Return</button>
+                      </div>
+                    ))
+                ) : (
+                  <p>You haven't rented any books.</p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* 💸 Refund Section */}
+          {parseFloat(refundAmount) > 0 && (
+            <div className="centered-refund-banner">
+              <p>Pending Refund: {refundAmount} ETH</p>
+              <button onClick={withdrawRefund} className="btn primary-btn">Withdraw Refund</button>
+            </div>
+          )}
+        </>
+      )}
+    </main>
+
+    <footer className="app-footer">
+      <p>© {new Date().getFullYear()} BookRental DApp</p>
+    </footer>
+  </div>
+);
 
 export default App;
