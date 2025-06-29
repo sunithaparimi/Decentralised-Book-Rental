@@ -90,23 +90,35 @@ function App() {
   }, []);
 
   const listBook = async () => {
-    if (!bookTitle || !dailyPrice || !deposit) return alert("Fill in all fields.");
-    try {
-      const dailyPriceInWei = web3.utils.toWei(dailyPrice.toString(), "ether");
-      const depositInWei = web3.utils.toWei(deposit.toString(), "ether");
+  if (!bookTitle || !dailyPrice || !deposit) {
+    alert("Fill in all fields.");
+    return;
+  }
 
-      await contract.methods
-        .listItem(bookTitle, dailyPriceInWei, depositInWei)
-        .send({ from: account });
+  if (!contract) {
+    alert("Contract not loaded yet. Please wait.");
+    return;
+  }
 
-      alert("Book listed.");
-      setBookTitle(""); setDailyPrice(""); setDeposit("");
-      loadBlockchainData();
-    } catch (err) {
-      console.error("List Error:", err);
-      alert("List failed.");
-    }
-  };
+  try {
+    const dailyPriceInWei = web3.utils.toWei(dailyPrice.toString(), "ether");
+    const depositInWei = web3.utils.toWei(deposit.toString(), "ether");
+
+    await contract.methods
+      .listItem(bookTitle, dailyPriceInWei, depositInWei)
+      .send({ from: account });
+
+    alert("Book listed.");
+    setBookTitle("");
+    setDailyPrice("");
+    setDeposit("");
+    loadBlockchainData();
+  } catch (err) {
+    console.error("List Error:", err);
+    alert("List failed.");
+  }
+};
+
 
   const unlistBook = async (itemId) => {
     try {
