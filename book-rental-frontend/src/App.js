@@ -245,7 +245,12 @@ function App() {
                     <div key={book.index} className="book-card">
                       <p><strong>{book.title}</strong></p>
                       <p>
-                        Rent: {web3?.utils.fromWei(book.dailyPrice)} ETH/day + {web3?.utils.fromWei(book.deposit)} ETH deposit
+                       <p>
+  Rent: 
+  {book.dailyPrice ? web3?.utils.fromWei(book.dailyPrice.toString(), 'ether') : 'N/A'} ETH/day + 
+  {book.deposit ? web3?.utils.fromWei(book.deposit.toString(), 'ether') : 'N/A'} ETH deposit
+</p>
+
                       </p>
                       <button onClick={() => rentBook(book.index)} className="btn primary-btn small-button">Rent</button>
                     </div>
