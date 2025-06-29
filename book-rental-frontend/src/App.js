@@ -16,7 +16,6 @@ function App() {
   const [deposit, setDeposit] = useState("");
   const [refundAmount, setRefundAmount] = useState("0");
 
-  // Connect Wallet Handler
   const connectWallet = async () => {
     if (window.ethereum) {
       try {
@@ -31,7 +30,6 @@ function App() {
     }
   };
 
-  // Load blockchain data
   const loadBlockchainData = async () => {
     if (window.ethereum) {
       try {
@@ -90,35 +88,34 @@ function App() {
   }, []);
 
   const listBook = async () => {
-  if (!bookTitle || !dailyPrice || !deposit) {
-    alert("Fill in all fields.");
-    return;
-  }
+    if (!bookTitle || !dailyPrice || !deposit) {
+      alert("Fill in all fields.");
+      return;
+    }
 
-  if (!contract) {
-    alert("Contract not loaded yet. Please wait.");
-    return;
-  }
+    if (!contract) {
+      alert("Contract not loaded yet. Please wait.");
+      return;
+    }
 
-  try {
-    const dailyPriceInWei = web3.utils.toWei(dailyPrice.toString(), "ether");
-    const depositInWei = web3.utils.toWei(deposit.toString(), "ether");
+    try {
+      const dailyPriceInWei = web3.utils.toWei(dailyPrice.toString(), "ether");
+      const depositInWei = web3.utils.toWei(deposit.toString(), "ether");
 
-    await contract.methods
-      .listItem(bookTitle, dailyPriceInWei, depositInWei)
-      .send({ from: account });
+      await contract.methods
+        .listItem(bookTitle, dailyPriceInWei, depositInWei)
+        .send({ from: account });
 
-    alert("Book listed.");
-    setBookTitle("");
-    setDailyPrice("");
-    setDeposit("");
-    loadBlockchainData();
-  } catch (err) {
-    console.error("List Error:", err);
-    alert("List failed.");
-  }
-};
-
+      alert("Book listed.");
+      setBookTitle("");
+      setDailyPrice("");
+      setDeposit("");
+      loadBlockchainData();
+    } catch (err) {
+      console.error("List Error:", err);
+      alert("List failed.");
+    }
+  };
 
   const unlistBook = async (itemId) => {
     try {
@@ -131,6 +128,8 @@ function App() {
 
   const rentBook = async (index) => {
     const book = books.find(b => b.index === index);
+    if (!book) return;
+
     const total = new BN(book.dailyPrice).add(new BN(book.deposit));
     try {
       await contract.methods.rentItem(index).send({ from: account, value: total.toString() });
@@ -144,6 +143,8 @@ function App() {
   const returnBook = async (id) => {
     try {
       const book = books.find(b => b.index === id);
+      if (!book) return;
+
       const rentedAt = Number(book.rental.rentedAt) * 1000;
       const elapsed = Math.floor((Date.now() - rentedAt) / 60000);
       let penaltyWei = new BN(0);
@@ -220,7 +221,7 @@ function App() {
                 {books.map(book => (
                   <div key={book.index} className="book-card">
                     <p><strong>{book.title}</strong></p>
-                    <p>Rent: {web3?.utils.fromWei(book.dailyPrice)} ETH/day + {web3?.utils.fromWei(book.deposit)} ETH deposit</p>
+                    <p>Rent: {book.dailyPrice ? web3?.utils.fromWei(book.dailyPrice.toString(), 'ether') : 'N/A'} ETH/day + {book.deposit ? web3?.utils.fromWei(book.deposit.toString(), 'ether') : 'N/A'} ETH deposit</p>
                     <p>Status: {book.isAvailable ? "Available" : "Rented"}</p>
                     {book.isAvailable ? (
                       <button onClick={() => unlistBook(book.index)} className="btn danger-btn">Unlist</button>
@@ -234,7 +235,6 @@ function App() {
           </div>
         )}
 
-        {/* Renter View */}
         {account?.toLowerCase() !== contractOwner?.toLowerCase() && (
           <>
             <div className="dashboard-grid">
@@ -245,12 +245,7 @@ function App() {
                     <div key={book.index} className="book-card">
                       <p><strong>{book.title}</strong></p>
                       <p>
-                       <p>
-  Rent: 
-  {book.dailyPrice ? web3?.utils.fromWei(book.dailyPrice.toString(), 'ether') : 'N/A'} ETH/day + 
-  {book.deposit ? web3?.utils.fromWei(book.deposit.toString(), 'ether') : 'N/A'} ETH deposit
-</p>
-
+                        Rent: {book.dailyPrice ? web3?.utils.fromWei(book.dailyPrice.toString(), 'ether') : 'N/A'} ETH/day + {book.deposit ? web3?.utils.fromWei(book.deposit.toString(), 'ether') : 'N/A'} ETH deposit
                       </p>
                       <button onClick={() => rentBook(book.index)} className="btn primary-btn small-button">Rent</button>
                     </div>
