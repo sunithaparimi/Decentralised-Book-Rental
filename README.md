@@ -32,7 +32,7 @@ Parimi Sunitha - cse230001061.
 ## Interpretations
 This decentralized book rental application demonstrates the power of blockchain in managing peer-to-peer rentals without relying on centralized intermediaries.
 It showcases secure user role management (owners and renters), transparent transactions using smart contracts, automatic penalty handling for late returns, and refund settlements — all directly controlled by users through their own wallets.
-The project emphasizes real-world usage of Ethereum, smart contracts, and decentralized authentication in a simple rental marketplace setting.
+The project emphasizes real-world usage of Ethereum, smart contracts, and decentralized authentication in a simple rental marketplace
 
 ---
 ##  Tech Stack
